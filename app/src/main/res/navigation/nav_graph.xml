@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <!-- グローバルアクション -->
+    <action
+        android:id="@+id/grobal_action_to_main"
+        app:destination="@+id/mainFragment"
+        app:popUpTo="@+id/mainFragment"/>
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="tokyo.mstp015v.atendance.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_output1Fragment"
+            app:destination="@id/output1Fragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_inputListFragment"
+            app:destination="@id/inputListFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_restoreFragment"
+            app:destination="@id/restoreFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_backupFragment"
+            app:destination="@id/backupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inputFragment"
+        android:name="tokyo.mstp015v.atendance.InputFragment"
+        android:label="fragment_input"
+        tools:layout="@layout/fragment_input" >
+        <action
+            android:id="@+id/action_inputFragment_to_timeTableFragment"
+            app:destination="@id/timeTableFragment" />
+        <argument
+            android:name="nen"
+            app:argType="integer" />
+        <argument
+            android:name="tsuki"
+            app:argType="integer" />
+        <argument
+            android:name="hi"
+            app:argType="integer" />
+        <argument
+            android:name="jikan"
+            app:argType="integer" />
+        <argument
+            android:name="kamoku_mei"
+            app:argType="string" />
+        <argument android:name="kurasu_mei"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/output1Fragment"
+        android:name="tokyo.mstp015v.atendance.Output1Fragment"
+        android:label="fragment_output1"
+        tools:layout="@layout/fragment_output1" >
+        <action
+            android:id="@+id/action_output1Fragment_to_output2Fragment"
+            app:destination="@id/output2Fragment" />
+        <action
+            android:id="@+id/action_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/output2Fragment"
+        android:name="tokyo.mstp015v.atendance.Output2Fragment"
+        android:label="fragment_output2"
+        tools:layout="@layout/fragment_output2" >
+        <action
+            android:id="@+id/action_output2Fragment_to_output1Fragment"
+            app:destination="@id/output1Fragment" />
+        <action
+            android:id="@+id/action_output2Fragment_self"
+            app:destination="@id/output2Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inputListFragment"
+        android:name="tokyo.mstp015v.atendance.InputListFragment"
+        android:label="fragment_input_list"
+        tools:layout="@layout/fragment_input_list" >
+        <action
+            android:id="@+id/action_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_inputListFragment_to_timeTableFragment"
+            app:destination="@id/timeTableFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/timeTableFragment"
+        android:name="tokyo.mstp015v.atendance.TimeTableFragment"
+        android:label="fragment_time_table"
+        tools:layout="@layout/fragment_time_table" >
+        <action
+            android:id="@+id/action_timeTableFragment_to_inputFragment"
+            app:destination="@id/inputFragment" />
+        <action
+            android:id="@+id/action_timeTableFragment_to_inputListFragment"
+            app:destination="@id/inputListFragment" />
+        <argument
+            android:name="kurasu_mei"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/restoreFragment"
+        android:name="tokyo.mstp015v.atendance.RestoreFragment"
+        android:label="fragment_restore"
+        tools:layout="@layout/fragment_restore" >
+        <action
+            android:id="@+id/action_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/backupFragment"
+        android:name="tokyo.mstp015v.atendance.BackupFragment"
+        android:label="fragment_backup"
+        tools:layout="@layout/fragment_backup" >
+        <action
+            android:id="@+id/action_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+</navigation>

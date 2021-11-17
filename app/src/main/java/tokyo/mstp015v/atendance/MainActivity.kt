@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity() {
             field = value
         }
 
-    private lateinit var realm:Realm
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate( layoutInflater )
@@ -53,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             .deleteRealmIfMigrationNeeded()
             .build()
         Realm.setDefaultConfiguration( config )
-        realm = Realm.getDefaultInstance(  )
+        //val realm = Realm.getDefaultInstance(  )
 
         //プリファレンスにsheet_idが記録されているか確認する
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
@@ -191,7 +189,9 @@ class MainActivity : AppCompatActivity() {
     fun createSheets() {
         //coroutine
         MainScope().launch{
+            val realm = Realm.getDefaultInstance()
             val id = getNextId<SheetId>(realm)
+            realm.close()
             val ymd = getYmd()
 
             val s_id = async( Dispatchers.Default ){

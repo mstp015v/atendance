@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,20 +20,26 @@ import tokyo.mstp015v.atendance.databinding.FragmentKurasuMakeBinding
 
 class KurasuMakeFragment : Fragment() {
     class MyAdapter( var data : List<KurasuPermission> ) : RecyclerView.Adapter<MyAdapter.ViewHolder>(){
-        private var listener : ((position:Int,value:String)->Unit)? = null
+        private var listener1 : ((position:Int,value:String)->Unit)? = null
+        private var listener2 : ((position:Int,value:String)->Unit)? = null
+        private var listener3 : ((position:Int)->Unit)? = null
 
         fun setKurasuMeiAfterListener( listener : ((position:Int,value:String)->Unit)){
-            this.listener = listener
+            this.listener1 = listener
         }
 
         fun setAccountAfterListener( listener : ((position:Int,value:String)->Unit)){
-            this.listener = listener
+            this.listener2 = listener
         }
 
+        fun setDeleteListener( listener : ((position:Int)->Unit)){
+            this.listener3 = listener
+        }
         class ViewHolder(view : View):RecyclerView.ViewHolder( view ){
             val textId = view.findViewById<TextView>(R.id.textIdKurasuMake )
             val editKurasuMei = view.findViewById<EditText>(R.id.editKurasuMeiKurasuMake)
             val editAccount = view.findViewById<EditText>(R.id.editAccountKurasuMake)
+            val imageDelete = view.findViewById<ImageView>(R.id.imageDeleteKurasuMake)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,13 +51,19 @@ class KurasuMakeFragment : Fragment() {
             holder.textId.text = data[position].id.toString()
             holder.editKurasuMei.setText(data[position].kurasu_mei)
             holder.editAccount.setText( data[position].tantou_account)
+
             holder.editKurasuMei.doAfterTextChanged {
-                listener?.invoke( position , holder.editKurasuMei.text.toString() )
-            }
-            holder.editAccount.doAfterTextChanged {
-                listener?.invoke( position , holder.editAccount.text.toString() )
+                listener1?.invoke( position , holder.editKurasuMei.text.toString() )
             }
 
+            holder.editAccount.doAfterTextChanged {
+                listener2?.invoke( position , holder.editAccount.text.toString() )
+            }
+
+            holder.imageDelete.setOnClickListener {
+                listener3?.invoke( position )
+
+            }
             Log.d("onBind",data[position].id.toString())
         }
 
@@ -94,7 +107,7 @@ class KurasuMakeFragment : Fragment() {
             list.add( KurasuPermission(1,"",""))
         }
 
-        //realm.close()
+        realm.close()
 
         val adapter = MyAdapter( list )
         binding.recyclerViewKurasuMake.adapter = adapter
@@ -103,9 +116,21 @@ class KurasuMakeFragment : Fragment() {
         //adapterのイベント
         adapter.setKurasuMeiAfterListener { position, value ->
             list[position].kurasu_mei = value
+            Log.d("event", value )
         }
         adapter.setAccountAfterListener { position, value ->
             list[position].tantou_account = value
+            Log.d("event", value )
+        }
+        adapter.setDeleteListener {
+            val realm = Realm.getDefaultInstance()
+            val kurasu = list.removeAt( it )
+            val ret = realm.where<KurasuPermission>().equalTo("id",kurasu.id).findAll()
+            Log.d("delete", kurasu.id.toString() )
+            realm.executeTransactionAsync {
+                ret.deleteAllFromRealm()
+            }
+            //realm.close()
         }
         //追加ボタンのイベント
         binding.buttonAddKurasuMake.setOnClickListener {
@@ -141,6 +166,8 @@ class KurasuMakeFragment : Fragment() {
                 }
             }
             Snackbar.make(binding.root,"追加更新完了",Snackbar.LENGTH_SHORT).show()
+            realm.close()
+
         }
     }
 

@@ -9,34 +9,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:background="@color/darkgray"
+        android:background="@color/lightgray"
         android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textGakuseiMove"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:background="@color/white"
-            android:padding="10dp"
-            android:text="学生データ"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         <TextView
             android:id="@+id/textKurasuMove"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginTop="1px"
             android:background="@color/white"
             android:padding="10dp"
             android:text="クラスパーミッションデータ"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         <TextView
+            android:id="@+id/textGakuseiMove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1px"
+            android:background="@color/white"
+            android:padding="10dp"
+            android:text="学生データ"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+        <TextView
             android:id="@+id/textRisyuuMove"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginTop="1px"
             android:background="@color/white"
             android:padding="10dp"
             android:text="履修データ"

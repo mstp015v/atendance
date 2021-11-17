@@ -58,6 +58,10 @@ class BackupFragment : Fragment() {
         binding.textNewBackup.setOnClickListener{
             backupSheets( null )
         }
+        //すでに存在するバックアップ
+        //adapter.setOnItemClickListener {
+        //    backupSheets( it )
+        //}
 
     }
     //引数のジェネリッククラスでRealmから次のIDを取得する
@@ -96,7 +100,7 @@ class BackupFragment : Fragment() {
             val realm = Realm.getDefaultInstance()
             val gakusei = realm.where<Gakusei>().findAll()
             val risyuu = realm.where<Risyuu>().findAll()
-            val syusseki = realm.where<Syusseki>().findAll()
+            val syusseki = realm.where<Syusseki>().sort("id").findAll()
             val kurasupermission = realm.where<KurasuPermission>().findAll()
 
             val id = getNextId<SheetId>(realm)
@@ -126,6 +130,7 @@ class BackupFragment : Fragment() {
             var retsheetid : String? = null
             val valuesList = mutableMapOf<String,List<List<Any>>>()
 
+            //nullの場合は新規作成、非nullの場合は更新（更新は今回の要件から外す）
             if(backupsheetid==null){
                 //atendance sheetを新規作成する場合(realmの内容を書き込む)
                 //セルに値を表示する
@@ -197,41 +202,28 @@ class BackupFragment : Fragment() {
             }else{
                 //atendance sheetを更新する場合
                 //非同期通信開始
-                val s_id = async( Dispatchers.Default ){
-                    val res1 = sheetsService.spreadsheets().values().get(backupsheetid,"syusseki!A2:K1000").execute()
+                    /*
+                val val1 = async( Dispatchers.Default ) {
+                    val res1 = sheetsService.spreadsheets().values()
+                        .get(backupsheetid, "syusseki!A2:K1000").execute()
                     val val1 = res1.getValues()
-                    val syusseki = realm.where<Syusseki>().sort("id").findAll()
-                    var i = 0
-                    var j = 0
+                    return@async val1
+                }.await()
 
-                    while( val1.size > i && syusseki.size > j ){
+                //val syusseki = realm.where<Syusseki>().sort("id").findAll()
+                var i = 0
+                var j = 0
 
-                        if( (val1[i][0] as Long) == syusseki[j]!!.id){
-                            //idが一致している
-                            val1[i][6] = syusseki[j]!!.kamoku_mei
-                            val1[i][11] = syusseki[j]!!.syusseki_code
-                            i++
-                            j++
-                        }else if( (val1[i][0] as Long) > syusseki[j]!!.id ){
-                            //sheetにないがrealmにあるので追加
-                            val list = mutableListOf<Any>()
-                            list.add(syusseki[j]!!.id)
-                            list.add(syusseki[j]!!.gakusei_id)
-                            list.add(syusseki[j]!!.no)
-                            list.add(syusseki[j]!!.gakusei_mei)
-                            list.add(syusseki[j]!!.kurasu_mei)
-                            list.add(syusseki[j]!!.tantou_account)
-                            list.add(syusseki[j]!!.kamoku_mei)
-                            list.add(syusseki[j]!!.nen)
-                            list.add(syusseki[j]!!.tsuki)
-                            list.add(syusseki[j]!!.hi)
-                            list.add(syusseki[j]!!.jikan)
-                            list.add(syusseki[j]!!.syusseki_code)
-                            val1.add( list )
-                            j++
-                        }
-                    }
-                    while( syusseki.size > j ){
+                while( val1.size > i && syusseki.size > j ){
+                    Log.d("while","${val1[i][0]},${syusseki[j]!!.id}")
+                    if( (Integer.parseInt(val1[i][0] as String).toLong()) == syusseki[j]!!.id){
+                        //idが一致している
+                        val1[i][6] = syusseki[j]!!.kamoku_mei
+                        val1[i][11] = syusseki[j]!!.syusseki_code
+                        i++
+                        j++
+                    }else if( (Integer.parseInt(val1[i][0] as String).toLong()) > syusseki[j]!!.id ){
+                        //sheetにないがrealmにあるので追加
                         val list = mutableListOf<Any>()
                         list.add(syusseki[j]!!.id)
                         list.add(syusseki[j]!!.gakusei_id)
@@ -247,12 +239,31 @@ class BackupFragment : Fragment() {
                         list.add(syusseki[j]!!.syusseki_code)
                         val1.add( list )
                         j++
+                    }else if((Integer.parseInt(val1[i][0] as String).toLong()) < syusseki[j]!!.id){
+                        i++
                     }
+                }
+                while( syusseki.size > j ){
+                    val list = mutableListOf<Any>()
+                    list.add(syusseki[j]!!.id)
+                    list.add(syusseki[j]!!.gakusei_id)
+                    list.add(syusseki[j]!!.no)
+                    list.add(syusseki[j]!!.gakusei_mei)
+                    list.add(syusseki[j]!!.kurasu_mei)
+                    list.add(syusseki[j]!!.tantou_account)
+                    list.add(syusseki[j]!!.kamoku_mei)
+                    list.add(syusseki[j]!!.nen)
+                    list.add(syusseki[j]!!.tsuki)
+                    list.add(syusseki[j]!!.hi)
+                    list.add(syusseki[j]!!.jikan)
+                    list.add(syusseki[j]!!.syusseki_code)
+                    val1.add( list )
+                    j++
+                }
 
-                    return@async backupsheetid
+                retsheetid = backupsheetid
 
-                }.await()
-                retsheetid = s_id
+                */
             }
 
             //MainActivityのsheetidに書き込む

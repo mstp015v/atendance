@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_mainFragment_to_backupFragment"
             app:destination="@id/backupFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_makeTopFragment"
+            app:destination="@id/makeTopFragment" />
     </fragment>
     <fragment
         android:id="@+id/inputFragment"
@@ -123,5 +126,65 @@
         <action
             android:id="@+id/action_to_mainFragment"
             app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/makeTopFragment"
+        android:name="tokyo.mstp015v.atendance.MakeTopFragment"
+        android:label="fragment_make_top"
+        tools:layout="@layout/fragment_make_top" >
+        <action
+            android:id="@+id/action_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_makeTopFragment_to_kurasuMakeFragment"
+            app:destination="@id/kurasuMakeFragment" />
+        <action
+            android:id="@+id/action_makeTopFragment_to_risyuuMakeFragment"
+            app:destination="@id/risyuuMakeFragment" />
+        <action
+            android:id="@+id/action_makeTopFragment_to_gakuseiMakeKurasuListFragment"
+            app:destination="@id/gakuseiMakeKurasuListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/kurasuMakeFragment"
+        android:name="tokyo.mstp015v.atendance.KurasuMakeFragment"
+        android:label="fragment_kurasu_make"
+        tools:layout="@layout/fragment_kurasu_make" >
+        <action
+            android:id="@+id/action_to_makeTopFragment"
+            app:destination="@id/makeTopFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/risyuuMakeFragment"
+        android:name="tokyo.mstp015v.atendance.RisyuuMakeFragment"
+        android:label="fragment_risyuu_make"
+        tools:layout="@layout/fragment_risyuu_make" >
+        <action
+            android:id="@+id/action_to_makeTopFragment"
+            app:destination="@id/makeTopFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gakuseiMakeKurasuListFragment"
+        android:name="tokyo.mstp015v.atendance.GakuseiMakeKurasuListFragment"
+        android:label="fragment_gakusei_make_kurasu_list"
+        tools:layout="@layout/fragment_gakusei_make_kurasu_list" >
+        <action
+            android:id="@+id/action_to_makeTopFragment"
+            app:destination="@id/makeTopFragment" />
+        <action
+            android:id="@+id/action_gakuseiMakeKurasuListFragment_to_gakuseiMakeFragment"
+            app:destination="@id/gakuseiMakeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gakuseiMakeFragment"
+        android:name="tokyo.mstp015v.atendance.GakuseiMakeFragment"
+        android:label="fragment_gakusei_make"
+        tools:layout="@layout/fragment_gakusei_make" >
+        <action
+            android:id="@+id/action_gakuseiMakeFragment_to_gakuseiMakeKurasuListFragment"
+            app:destination="@id/gakuseiMakeKurasuListFragment" />
+        <argument
+            android:name="kurasu_mei"
+            app:argType="string" />
     </fragment>
 </navigation>

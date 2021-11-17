@@ -51,7 +51,7 @@ class InputFragment : Fragment() {
             val syusseki:Syusseki? = data[position]
             holder.textNo.text = syusseki!!.no.toString()
             holder.textNamae.text = syusseki!!.gakusei_mei
-            Log.d("Input onBind","${syusseki!!.no},${syusseki.gakusei_mei}")
+            Log.d("Input onBind","${syusseki!!.no},${syusseki.gakusei_mei},${syusseki.kamoku_mei}")
 
             when( syusseki!!.syusseki_code ){
                 0->{
@@ -136,7 +136,7 @@ class InputFragment : Fragment() {
 
         val maxId = realm.where<Syusseki>().max("id")
         var nextId = (maxId?.toLong() ?: 0L) + 1L
-
+        Log.d("realmSize" , realmResult.size.toString() )
         if( realmResult.size > 0){
             //出席がrealmに存在する
             realmResult.forEach {
@@ -156,12 +156,13 @@ class InputFragment : Fragment() {
                 )
                 nextId++
                 syussekiList.add( syusseki )
+                Log.d("存在する" , it.kamoku_mei )
             }
             existsSyussekiRealm = true
 
         }else {
             //出席がrealmに存在しない
-            val realmResult = realm.where<Gakusei>().equalTo("kurasu_mei", args.kurasuMei).findAll()
+            val realmResult = realm.where<Gakusei>().equalTo("kurasu_mei", args.kurasuMei).sort("no").findAll()
             realmResult.forEach {
                 val syusseki = Syusseki(
                     nextId,
@@ -178,29 +179,34 @@ class InputFragment : Fragment() {
                     0)
                 syussekiList.add(syusseki)
                 nextId++
-
-                Log.d("input realm", args.kamokuMei )
+                Log.d("存在しない",args.kamokuMei)
+                existsSyussekiRealm = false
             }
         }
 
+        //出席入力用recyclerview
         val adapter = InputFragmentRecyclerViewAdapter( syussekiList )
 
         adapter.setItemOnClickListener { syusseki_code, position ->
             syussekiList[position].syusseki_code = syusseki_code
         }
+
         binding.recyclerViewInput.adapter = adapter
         binding.recyclerViewInput.layoutManager = LinearLayoutManager(context)
 
         //保存ボタンクリック時レルムに保存または更新する
         binding.saveButton.setOnClickListener {
+
+            Log.d("exists" , existsSyussekiRealm.toString() )
+
             if( existsSyussekiRealm ){
                 //すでにデータがあるので更新
                 syussekiList.forEach{ it1 ->
                     realm.executeTransactionAsync{ it2 ->
                         val syusseki = it2.where<Syusseki>().equalTo("id",it1.id ).findFirst()
-                        if( binding.editKamokuMei.text == null ) {
-                            syusseki!!.kamoku_mei = it1.kamoku_mei
-                        }else{
+                        if( binding.editKamokuMei.text.length > 0 ) {
+                            //syusseki!!.kamoku_mei = it1.kamoku_mei
+                        //}else{
                             syusseki!!.kamoku_mei = binding.editKamokuMei.text.toString()
                         }
                         syusseki!!.syusseki_code = it1.syusseki_code
@@ -213,13 +219,14 @@ class InputFragment : Fragment() {
                     realm.executeTransactionAsync{ it2->
                         var syusseki = it2.createObject<Syusseki>(it1.id)
                         syusseki.gakusei_id = it1.gakusei_id
+                        syusseki.no = it1.no
                         syusseki.gakusei_mei = it1.gakusei_mei
                         syusseki.kurasu_mei = it1.kurasu_mei
                         syusseki.tantou_account = it1.tantou_account
-                        if( binding.editKamokuMei.text == null ) {
+                        if( binding.editKamokuMei.text.length == 0 ) {
                             syusseki.kamoku_mei = it1.kamoku_mei
-                        }else{
-                            syusseki.kamoku_mei = binding.editKamokuMei.text.toString()
+                        //}else{
+                        //    syusseki.kamoku_mei = binding.editKamokuMei.text.toString()
                         }
 
                         //Log.d("realmkamokumei", syusseki.kamoku_mei )

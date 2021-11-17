@@ -2,6 +2,11 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/itemMake"
+        android:enabled="false"
+        android:icon="@drawable/ic_baseline_credit_card_24"
+        android:title="データを作る" />
+    <item
         android:id="@+id/itemInput"
         android:enabled="false"
         android:icon="@drawable/ic_baseline_create"

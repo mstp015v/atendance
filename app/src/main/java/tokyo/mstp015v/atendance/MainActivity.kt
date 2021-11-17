@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.findNavController
@@ -16,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
+import com.google.android.material.snackbar.Snackbar
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -59,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         if( sheet_id != null ) {
             Log.d("pref", sheet_id!!)
         }
+
         //ActionvarをToolbarにする
         setSupportActionBar( binding.toolbar )
 
@@ -71,6 +74,12 @@ class MainActivity : AppCompatActivity() {
         //drawerにclickListenerを設定
         binding.navView.setNavigationItemSelectedListener {
             when(it.itemId){
+                R.id.itemMake-> {
+                    val action = MainFragmentDirections.actionMainFragmentToMakeTopFragment()
+                    binding.navHost.findNavController().navigate(action )
+                    binding.drawerLayout.closeDrawers()
+                    true
+                }
                 R.id.itemInput-> {
                     val action = MainFragmentDirections.actionMainFragmentToInputListFragment()
                     binding.navHost.findNavController().navigate(action)
@@ -102,7 +111,9 @@ class MainActivity : AppCompatActivity() {
             //インプットとアウトプットをtrueにする
             binding.navView.menu.findItem(R.id.itemInput).isEnabled = true
             binding.navView.menu.findItem(R.id.itemOutput).isEnabled = true
-
+            binding.navView.menu.findItem(R.id.itemBackup).isEnabled = true
+            binding.navView.menu.findItem(R.id.itemRestore).isEnabled = true
+            binding.navView.menu.findItem(R.id.itemMake).isEnabled = true
         }else{
             //navheaderにDisplayNameを設定
             binding.navView.getHeaderView(0).findViewById<TextView>(R.id.textNavHeaderEmail).text = "サインインしてません"
@@ -169,6 +180,8 @@ class MainActivity : AppCompatActivity() {
 
                 }else{
                     this.sheet_id = id
+                    Snackbar.make(binding.root,"サインインしました",Snackbar.LENGTH_SHORT).show()
+                    binding.progressBar2.visibility = ProgressBar.INVISIBLE
                 }
             }
         }
@@ -235,6 +248,8 @@ class MainActivity : AppCompatActivity() {
 
             //
             sheet_id = s_id
+            Snackbar.make(binding.root,"${sheet_id!!.substring(0,5)}…を作成しました",Snackbar.LENGTH_SHORT).show()
+            binding.progressBar2.visibility = ProgressBar.INVISIBLE
 
             //プリファレンスに書き込む
             val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
@@ -265,8 +280,10 @@ class MainActivity : AppCompatActivity() {
         when(item.itemId){
             R.id.item_sign_in_out->{
                 if(item.title=="SignIn"){
+                    binding.progressBar2.visibility = ProgressBar.VISIBLE
                     val intent = client.signInIntent
                     launcher.launch( intent )
+
                 }else if( item.title=="SignOut"){
                     client.signOut()
                     //ボタン系を一括設定
@@ -283,7 +300,6 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         return super.onPrepareOptionsMenu(menu)

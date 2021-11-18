@@ -24,7 +24,6 @@ import tokyo.mstp015v.atendance.databinding.FragmentInputBinding
 
 class InputFragment : Fragment() {
 
-
     class InputFragmentRecyclerViewAdapter(var data : List<Syusseki> )
         : RecyclerView.Adapter<InputFragmentRecyclerViewAdapter.ViewHolder>(){
 

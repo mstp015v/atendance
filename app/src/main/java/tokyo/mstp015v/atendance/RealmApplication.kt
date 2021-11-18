@@ -8,7 +8,12 @@ class RealmApplication : Application() {
     override fun onCreate(){
         super.onCreate()
         Realm.init( this )
-        val config = RealmConfiguration.Builder().allowWritesOnUiThread(true).build()
+
+        //UIスレッドからの書き込み可能+スキーマが変わったらrealmを削除
+        val config = RealmConfiguration.Builder()
+            .allowWritesOnUiThread(true)
+            .deleteRealmIfMigrationNeeded()
+            .build()
         Realm.setDefaultConfiguration( config )
     }
 }

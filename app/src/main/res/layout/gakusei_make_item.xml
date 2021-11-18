@@ -17,15 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textIdMake"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:text="No"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textSize="16sp" />
-
         <EditText
             android:id="@+id/editGakuseiIdMake"
             android:layout_width="80dp"
@@ -58,6 +49,13 @@
             android:inputType="textPersonName"
             android:textSize="14sp"
             tools:ignore="TouchTargetSizeCheck" />
+
+        <ImageView
+            android:id="@+id/imageDeleteMake"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_baseline_delete_24" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.realm.Realm
 import io.realm.kotlin.where
@@ -63,12 +64,13 @@ class GakuseiMakeKurasuListFragment : Fragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-        val realm = Realm.getDefaultInstance()
-        val realmResult = realm.where<KurasuPermission>().findAll()
-
         val list = arrayListOf<String>()
-        realmResult.forEach{
-            list.add( it.kurasu_mei )
+
+        Realm.getDefaultInstance().use{ realm->
+            val realmResult = realm.where<KurasuPermission>().findAll()
+            realmResult.forEach{
+                list.add( it.kurasu_mei )
+            }
         }
 
         val adapter = MyAdapter( list )
@@ -77,7 +79,7 @@ class GakuseiMakeKurasuListFragment : Fragment() {
             findNavController().navigate( action )
         }
         binding.recyclerKurasuList.adapter = adapter
-
+        binding.recyclerKurasuList.layoutManager = LinearLayoutManager( context )
     }
 }
 

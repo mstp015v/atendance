@@ -46,13 +46,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate( layoutInflater )
         setContentView( binding.root )
 
-        //レルムスキーマが変わった時にはいったん消すための設定
-        val config = RealmConfiguration.Builder()
-            .deleteRealmIfMigrationNeeded()
-            .build()
-        Realm.setDefaultConfiguration( config )
-        //val realm = Realm.getDefaultInstance(  )
-
         //プリファレンスにsheet_idが記録されているか確認する
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         sheet_id = pref.getString("SHEET_ID" ,null )

@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
+import io.realm.RealmResults
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
+import kotlinx.coroutines.*
 import tokyo.mstp015v.atendance.databinding.FragmentKurasuMakeBinding
 
 class KurasuMakeFragment : Fragment() {
@@ -91,25 +93,29 @@ class KurasuMakeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val realm = Realm.getDefaultInstance()
-        val realmRet = realm.where<KurasuPermission>().findAll()
+        //RecyclerViewに表示するための設定
         val list = arrayListOf<KurasuPermission>()
-        Log.d("realmRetSize",realmRet.size.toString())
-        if( realmRet.size > 0 ) {
-            realmRet.forEach {
-                val item = KurasuPermission(
-                    it.id, it.kurasu_mei, it.tantou_account
-                )
+        val adapter = MyAdapter( list )
+        Realm.getDefaultInstance().use{
+            it.executeTransaction{
+                var realmRet : RealmResults<KurasuPermission>? = null
+                realmRet = it.where<KurasuPermission>().findAll()
 
-                list.add(item)
+                Log.d("realmRetSize",realmRet!!.size.toString())
+                if( realmRet!!.size > 0 ) {
+                    realmRet!!.forEach {
+                        val item = KurasuPermission(
+                            it.id, it.kurasu_mei, it.tantou_account
+                        )
+
+                        list.add(item)
+                    }
+                }else{
+                    list.add( KurasuPermission(1,"",""))
+                }
             }
-        }else{
-            list.add( KurasuPermission(1,"",""))
         }
 
-        realm.close()
-
-        val adapter = MyAdapter( list )
         binding.recyclerViewKurasuMake.adapter = adapter
         binding.recyclerViewKurasuMake.layoutManager = LinearLayoutManager(context )
 
@@ -118,24 +124,43 @@ class KurasuMakeFragment : Fragment() {
             list[position].kurasu_mei = value
             Log.d("event", value )
         }
+
         adapter.setAccountAfterListener { position, value ->
             list[position].tantou_account = value
             Log.d("event", value )
         }
+
         adapter.setDeleteListener {
-            val realm = Realm.getDefaultInstance()
-            val kurasu = list.removeAt( it )
-            val ret = realm.where<KurasuPermission>().equalTo("id",kurasu.id).findAll()
-            Log.d("delete", kurasu.id.toString() )
-            realm.executeTransactionAsync {
-                ret.deleteAllFromRealm()
+            Realm.getDefaultInstance().use{realm->
+                val kurasu = list.removeAt( it )
+                val ret = realm.where<KurasuPermission>().equalTo("id",kurasu.id).findAll()
+                Log.d("delete", kurasu.id.toString() )
+                realm.executeTransaction {
+                    ret.deleteAllFromRealm()
+                }
             }
-            //realm.close()
+            adapter.notifyDataSetChanged()
         }
+
         //追加ボタンのイベント
         binding.buttonAddKurasuMake.setOnClickListener {
-            val item = KurasuPermission((list.size + 1).toLong(), "","")
+            var max = 0L
+
+            list.forEach {
+                if( max < it.id ){
+                    max = it.id
+                }
+            }
+
+            val item = KurasuPermission(max + 1, "","")
             list.add( item )
+
+            Realm.getDefaultInstance().use{ realm->
+                realm.executeTransaction{ db->
+                    db.createObject<KurasuPermission>( item.id )
+                }
+            }
+
             adapter.notifyDataSetChanged()
 
             Log.d( "click",list.size.toString() )
@@ -143,31 +168,30 @@ class KurasuMakeFragment : Fragment() {
 
         //realmに登録する
         binding.buttonUpKurasuMake.setOnClickListener {
-            val realm = Realm.getDefaultInstance()
+            Realm.getDefaultInstance().use{ realm->
+                realm.executeTransactionAsync{ db->
+                    list.forEach{
 
-            realm.executeTransactionAsync{ db->
-                list.forEach{
+                        val realmRet = db.where<KurasuPermission>().equalTo("id",it.id).findFirst()
 
-                    val realmRet = db.where<KurasuPermission>().equalTo("id",it.id).findFirst()
+                        if( realmRet == null ){
+                            //存在しないので追加
+                            val maxId = ( db.where<KurasuPermission>().max("id") ?: 0L).toLong()
+                            Log.d("transaction" , "add" )
+                            val item = db.createObject<KurasuPermission>(maxId+1)
+                            item.kurasu_mei = it.kurasu_mei
+                            item.tantou_account = it.tantou_account
+                        }else{
+                            //存在するので更新
+                            Log.d("transaction" , realmRet.id.toString() )
+                            realmRet?.kurasu_mei = it.kurasu_mei
+                            realmRet?.tantou_account = it.tantou_account
+                        }
 
-                    if( realmRet == null ){
-                        //存在しないので追加
-                        Log.d("transaction" , "add" )
-                        val item = db.createObject<KurasuPermission>(it.id)
-                        item.kurasu_mei = it.kurasu_mei
-                        item.tantou_account = it.tantou_account
-                    }else{
-                        //存在するので更新
-                        Log.d("transaction" , realmRet.id.toString() )
-                        realmRet?.kurasu_mei = it.kurasu_mei
-                        realmRet?.tantou_account = it.tantou_account
                     }
-
                 }
             }
             Snackbar.make(binding.root,"追加更新完了",Snackbar.LENGTH_SHORT).show()
-            realm.close()
-
         }
     }
 
